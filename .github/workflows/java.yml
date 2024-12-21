@@ -30,15 +30,27 @@ jobs:
           - 21
     steps:
       - uses: actions/checkout@v3
+      - name: Debug GitHub Context
+        run: |
+          echo "Repository Owner: ${{ github.repository_owner }}"
+          echo "Token Length: ${#${{ secrets.REGISTRY_TOKEN }}}"
+          echo "Matrix Tag: ${{ matrix.tag }}"
       - uses: docker/setup-qemu-action@v2
       - uses: docker/setup-buildx-action@v2
         with:
           buildkitd-flags: --debug
+      - name: Debug Docker Login
+        run: |
+          echo "Attempting Docker Login with:"
+          echo "Registry: ghcr.io"
+          echo "Username: ${{ github.repository_owner }}"
       - uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.REGISTRY_TOKEN }}
+      - name: Debug Docker Login Result
+        run: echo "Docker login completed."
       - uses: docker/build-push-action@v4
         with:
           context: ./java
